@@ -1,0 +1,6 @@
+[submodule "src/Stage"]
+	path = src/Stage
+	url = https://github.com/CRTA-Lab/Stage.git
+[submodule "src/stage_ros2"]
+	path = src/stage_ros2
+	url = https://github.com/CRTA-Lab/stage_ros2.git
