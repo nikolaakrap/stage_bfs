@@ -147,7 +147,6 @@ class BFSNav(Node):
 
         img = np.flipud(img)
 
-        # obstacle pixels are very dark (same as your Dijkstra code)
         self.maze = (img < 10).astype(np.uint8)
 
         self.get_logger().info(f"Loaded map: {image_path}")
@@ -187,7 +186,7 @@ class BFSNav(Node):
                 q.append((nr, nc))
         return None
 
-    # ---------------- LASER ----------------
+    # laser
     def on_scan(self, msg: LaserScan):
         self.last_scan = msg
 
@@ -212,7 +211,7 @@ class BFSNav(Node):
 
         return np.min(front) < self.stop_dist
 
-    # ---------------- TF POSE ----------------
+    # robot pose
     def get_robot_pose_map(self):
         try:
             tf = self.tf_buffer.lookup_transform(self.frame_id, self.base_frame, rclpy.time.Time())
@@ -223,13 +222,8 @@ class BFSNav(Node):
         except Exception:
             return None
 
-    # ---------------- DYNAMIC BLOCKING ----------------
+    # this prevents picking the same unaccessible path twice
     def block_cells_ahead(self):
-        """
-        When laser says "blocked", we mark a small patch of cells in front of the robot
-        as obstacle in self.maze. This prevents BFS from picking the same impossible
-        corridor repeatedly.
-        """
         pose = self.get_robot_pose_map()
         if pose is None:
             return
@@ -254,7 +248,7 @@ class BFSNav(Node):
                     if 0 <= r2 < rows and 0 <= c2 < cols:
                         self.maze[r2, c2] = 1  # obstacle
 
-    # ---------------- CLICK START/GOAL ----------------
+    # settings start & goal
     def clicked_point_callback(self, msg: PointStamped):
         x, y = msg.point.x, msg.point.y
         r, c = self.world_to_grid(x, y)
@@ -300,7 +294,7 @@ class BFSNav(Node):
         self.goal_grid = None
         self.publish_goal_markers()
 
-    # ---------------- MARKERS ----------------
+    # markers
     def publish_goal_markers(self):
         ma = MarkerArray()
 
@@ -425,7 +419,7 @@ class BFSNav(Node):
         self.path_pub.publish(path_msg)
         return world_pts
 
-    # ---------------- BFS ----------------
+    # bfs algorithm
     def bfs(self, start, goal):
         rows, cols = self.maze.shape
         visited = np.zeros((rows, cols), dtype=bool)
@@ -478,7 +472,7 @@ class BFSNav(Node):
             return path
         return []
 
-    # ---------------- PLANNING ----------------
+    # planning
     def plan_and_start_follow(self):
         # clearing old markers
         clear = MarkerArray()
@@ -518,7 +512,7 @@ class BFSNav(Node):
         self.following = True
         self.state = 'FOLLOW'
 
-    # ---------------- RECOVERY ----------------
+    # recovery
     def stop_robot(self):
         self.cmd_pub.publish(Twist())
 
@@ -598,7 +592,6 @@ class BFSNav(Node):
         self.start_grid = None
         self.goal_grid = None
 
-    # ---------------- MAIN LOOP ----------------
     def loop(self):
         now_s = self.get_clock().now().nanoseconds / 1e9
 
