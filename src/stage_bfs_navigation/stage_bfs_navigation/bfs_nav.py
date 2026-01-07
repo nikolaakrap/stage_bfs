@@ -127,7 +127,7 @@ class BFSNav(Node):
         self.get_logger().info("BFSNav ready.")
         self.get_logger().info("Publish Points: 1. START, 2. GOAL.")
 
-    # ---------------- MAP LOADING ----------------
+    # map load
     def load_map_from_yaml(self, yaml_path):
         with open(yaml_path, 'r') as f:
             map_yaml = yaml.safe_load(f)
@@ -222,7 +222,7 @@ class BFSNav(Node):
         except Exception:
             return None
 
-    # this prevents picking the same unaccessible path twice
+    # prevents the algorithm from repeating the same impossible path
     def block_cells_ahead(self):
         pose = self.get_robot_pose_map()
         if pose is None:
@@ -248,7 +248,7 @@ class BFSNav(Node):
                     if 0 <= r2 < rows and 0 <= c2 < cols:
                         self.maze[r2, c2] = 1  # obstacle
 
-    # settings start & goal
+    # select start & goal
     def clicked_point_callback(self, msg: PointStamped):
         x, y = msg.point.x, msg.point.y
         r, c = self.world_to_grid(x, y)
