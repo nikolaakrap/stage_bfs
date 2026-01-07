@@ -53,7 +53,7 @@ cd ~/stage_bfs_ws
 This repository uses git submodules for Stage and stage_ros2.
 
 ```bash
-git clone --recurse-submodules https://github.com/<your_username>/stage_bfs_ws.git
+git clone --recurse-submodules https://github.com/nikolaakrap/stage_bfs.git
 ```
 
 If you already cloned without submodules:
